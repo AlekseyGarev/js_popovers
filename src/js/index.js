@@ -1,7 +1,7 @@
 export class PopoverWidget {
-    constructor(buttonId, content) {
+    constructor(buttonId, title, content) {
         this.button = document.getElementById(buttonId);
-        this.staticField = document.querySelector('.static-field');
+        this.title = title;
         this.content = content;
         this.hintElement = null;
 
@@ -22,23 +22,35 @@ export class PopoverWidget {
     }
 
     create() {
-        const hint = document.createElement('div');
-        hint.className = 'popover-hint';
-        hint.textContent = this.content; 
-    
-        document.body.appendChild(hint);
-        this.hintElement = hint;
-    
+        const popover = document.createElement('div');
+        popover.className = 'popover-hint';
+
+        const header = document.createElement('h3');
+        header.className = 'popover-title';
+        header.textContent = this.title;
+
+        const body = document.createElement('div');
+        body.className = 'popover-body';
+        body.textContent = this.content;
+
+        popover.appendChild(header);
+        popover.appendChild(body);
+        document.body.appendChild(popover);
+        
+        this.hintElement = popover;
         this.positionHint();
     }
 
     positionHint() {
-        const targetElement = this.staticField || this.button;
-        const targetCoords = targetElement.getBoundingClientRect();
+        if (!this.hintElement || !this.button) return;
+        const popoverWidth = this.hintElement.offsetWidth || 270;
+        const popoverHeight = this.hintElement.offsetHeight || 105;
+
+        const targetCoords = this.button.getBoundingClientRect();
         
-        const left = targetCoords.left + window.pageXOffset;
+        const left = targetCoords.left + window.scrollX + (targetCoords.width / 2) - (popoverWidth / 2);
         
-        const top = targetCoords.top + window.pageYOffset + targetCoords.height;
+        const top = targetCoords.top + window.scrollY - popoverHeight - 12;
 
         this.hintElement.style.left = `${left}px`;
         this.hintElement.style.top = `${top}px`;
@@ -52,8 +64,20 @@ export class PopoverWidget {
     }
 }
 
+function initWidget() {
+    if (document.getElementById('popover-btn')) {
+        new PopoverWidget(
+            'popover-btn', 
+            'Popover title',
+            "And here's some amazing content. It's very engaging. Right?"
+        );
+    }
+}
+
 if (typeof window !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', () => {
-        new PopoverWidget('popover-btn', "And here's some amazing content. It's very engaging. Right?");
-    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initWidget);
+    } else {
+        initWidget();
+    }
 }
