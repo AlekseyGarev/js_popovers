@@ -1,3 +1,3 @@
 ![CI](https://github.com/AlekseyGarev/js_popovers/actions/workflows/web.yml/badge.svg)
 
-https://github.com/AlekseyGarev/js_popovers
+[Popover test](https://alekseygarev.github.io/js_popovers/)
